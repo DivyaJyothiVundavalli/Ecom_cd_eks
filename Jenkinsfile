@@ -2,21 +2,60 @@
 pipeline {
     agent any
     environment {
-        AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
-        AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
-        AWS_DEFAULT_REGION = "eu-west-3"
+        // AWS_ACCESS_KEY_ID = credentials('AWS_ACCESS_KEY_ID')
+        // AWS_SECRET_ACCESS_KEY = credentials('AWS_SECRET_ACCESS_KEY')
+        AWS_ACCESS_KEY_ID = 'AKIAZI2LDTA2BAV2EHTI'
+        AWS_SECRET_ACCESS_KEY = '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'
+        AWS_DEFAULT_REGION = "us-east-2"
     }
     stages {
-        stage("Create an EKS Cluster") {
+        stage("Initializing Terraform'") {
             steps {
                 script {
                     dir('terraform') {
                         sh "terraform init"
-                        sh "terraform apply -auto-approve"
                     }
                 }
             }
         }
+        stage('Formating terraform code'){
+            steps{
+                script{
+                    dir('terraform'){
+                         sh 'terraform fmt'
+                    }
+                }
+            }
+        }
+        stage('Validating Terraform'){
+            steps{
+                script{
+                    dir('terraform'){
+                         sh 'terraform validate'
+                    }
+                }
+            }
+        }
+        stage('Previewing the infrastructure'){
+            steps{
+                script{
+                    dir('terraform'){
+                         sh 'terraform plan'
+                    }
+                    input(message: "Are you sure to proceed?", ok: "proceed")
+                }
+            }
+        }
+        stage('Creating/Destroying an EKS cluster'){
+            steps{
+                script{
+                    dir('terraform'){
+                         sh 'terraform $action --auto-approve'
+                    }
+                }
+            }
+        }
+        
         stage("Deploy to EKS") {
             steps {
                 script {
