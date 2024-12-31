@@ -7,7 +7,7 @@ pipeline {
         //
         AWS_ACCESS_KEY_ID = 'AKIAZI2LDTA2BAV2EHTI'
         AWS_SECRET_ACCESS_KEY = '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'
-        AWS_DEFAULT_REGION = "us-east-2"
+        AWS_DEFAULT_REGION = "ap-south-1"
     }
     stages {
         stage("Initializing Terraform'") {
